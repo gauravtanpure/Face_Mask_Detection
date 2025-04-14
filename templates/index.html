@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Mask Detection</title>
+
+    
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #ef476f;
+            --warning: #ffd166;
+            --info: #118ab2;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gradient: linear-gradient(90deg, #4361ee, #3a0ca3);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: var(--gradient);
+            color: white;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2 i {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .card-content {
+            margin-bottom: 20px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: var(--info);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #d64161;
+        }
+        
+        .status-area {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            display: none;
+        }
+        
+        .status-area.active {
+            display: block;
+        }
+        
+        .webcam-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        #webcam {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+        
+        .results-container {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            text-align: center;
+            display: none;
+        }
+        
+        .mask-status {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .status-mask {
+            color: var(--success);
+        }
+        
+        .status-no-mask {
+            color: var(--danger);
+        }
+        
+        .upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .file-drop-area {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            transition: 0.3s;
+            text-align: center;
+        }
+        
+        .file-drop-area:hover,
+        .file-drop-area.is-active {
+            background-color: rgba(67, 97, 238, 0.05);
+            border-color: var(--primary);
+        }
+        
+        .file-message {
+            font-size: 1.1rem;
+            color: #777;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            cursor: pointer;
+            opacity: 0;
+        }
+        
+        .preview-container {
+            width: 100%;
+            max-width: 300px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .preview-image {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .close-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #777;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            color: #777;
+        }
+        
+        /* Responsive styles */
+        @media (min-width: 768px) {
+            .features {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+            
+            .card {
+                height: 100%;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .features {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-head-side-mask"></i> Face Mask Detection</h1>
+            <p>Detect if people are wearing face masks in real-time or from images</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="features">
+                <div class="card">
+                    <h2><i class="fas fa-brain"></i> Train Model</h2>
+                    <div class="card-content">
+                        <p>Train the face mask detection model with your own dataset. Make sure you have the proper directory structure with mask/no mask images.</p>
+                    </div>
+                    <div class="btn-group">
+                        <button id="train-model-btn" class="btn btn-primary">
+                            <i class="fas fa-cogs"></i> Train Model
+                        </button>
+                    </div>
+                    <div id="train-status" class="status-area">
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill"></div>
+                        </div>
+                        <p id="train-status-text">Training model...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-camera"></i> Webcam Detection</h2>
+                    <div class="card-content">
+                        <p>Use your webcam for real-time face mask detection. Make sure your camera is connected and accessible.</p>
+                    </div>
+                    <div class="btn-group">
+                        <button id="start-webcam-btn" class="btn btn-success">
+                            <i class="fas fa-video"></i> Start Detection
+                        </button>
+                        <button id="stop-webcam-btn" class="btn btn-danger" style="display: none;">
+                            <i class="fas fa-video-slash"></i> Stop Detection
+                        </button>
+                    </div>
+                    <div class="webcam-container" id="webcam-container">
+                        <video id="webcam"></video>
+                        <canvas id="canvas" style="display: none;"></canvas>
+                        <div class="mask-status" id="webcam-status"></div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-image"></i> Image Detection</h2>
+                    <div class="card-content">
+                        <p>Upload an image to check if the person in the image is wearing a face mask.</p>
+                    </div>
+                    <div class="upload-container">
+                        <div class="file-drop-area">
+                            <div class="file-message">
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                <p>Drag & drop an image or click to browse</p>
+                            </div>
+                            <input class="file-input" type="file" accept="image/*" id="image-upload">
+                        </div>
+                        <div class="preview-container" id="preview-container">
+                            <img class="preview-image" id="preview-image">
+                        </div>
+                        <div class="loading-spinner" id="image-loading"></div>
+                        <div class="results-container" id="image-results">
+                            <h3>Detection Result:</h3>
+                            <div class="mask-status" id="image-status"></div>
+                        </div>
+                        <button id="process-image-btn" class="btn btn-primary" style="display: none; margin-top: 20px;">
+                            <i class="fas fa-check-circle"></i> Detect Mask
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal" id="status-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Status</h3>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Content will be dynamically added -->
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Face Mask Detection App</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        // DOM Elements
+        const trainModelBtn = document.getElementById('train-model-btn');
+        const trainStatus = document.getElementById('train-status');
+        const trainStatusText = document.getElementById('train-status-text');
+        const startWebcamBtn = document.getElementById('start-webcam-btn');
+        const stopWebcamBtn = document.getElementById('stop-webcam-btn');
+        const webcamContainer = document.getElementById('webcam-container');
+        const webcam = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const webcamStatus = document.getElementById('webcam-status');
+        const imageUpload = document.getElementById('image-upload');
+        const previewContainer = document.getElementById('preview-container');
+        const previewImage = document.getElementById('preview-image');
+        const processImageBtn = document.getElementById('process-image-btn');
+        const imageLoading = document.getElementById('image-loading');
+        const imageResults = document.getElementById('image-results');
+        const imageStatus = document.getElementById('image-status');
+        const modal = document.getElementById('status-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const closeModal = document.getElementById('close-modal');
+        const progressBar = document.querySelector('.progress-bar');
+        const progressBarFill = document.querySelector('.progress-bar-fill');
+        const fileDropArea = document.querySelector('.file-drop-area');
+        
+        // Variables
+        let stream = null;
+        let isModelTrained = false;
+        let detectionInterval = null;
+        
+        // Model training
+        trainModelBtn.addEventListener('click', function() {
+            trainStatus.style.display = 'block';
+            progressBar.style.display = 'block';
+            trainStatusText.textContent = 'Training model... 0%';
+            
+            fetch('/train', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    isModelTrained = true;
+                    trainStatusText.textContent = `Model training complete! Accuracy: ${(data.accuracy * 100).toFixed(2)}%`;
+                    showModal('Training Complete', `Model training completed successfully with ${(data.accuracy * 100).toFixed(2)}% accuracy.`);
+                } else {
+                    trainStatusText.textContent = 'Error training model';
+                    showModal('Training Error', 'There was an error training the model.');
+                }
+            })
+            .catch(error => {
+                trainStatusText.textContent = 'Error training model';
+                showModal('Training Error', `Error: ${error.message}`);
+            });
+        });
+        
+        // Webcam handling
+        startWebcamBtn.addEventListener('click', function() {
+            if (!isModelTrained) {
+                showModal('Model Not Trained', 'Please train the model first before using the webcam detection.');
+                return;
+            }
+            
+            // Start detection
+            fetch('/start_detection')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'started') {
+                        webcamContainer.style.display = 'flex';
+                        startWebcamBtn.style.display = 'none';
+                        stopWebcamBtn.style.display = 'inline-flex';
+                        
+                        // Set up video feed
+                        webcam.src = '/video_feed';
+                        webcamStatus.textContent = 'Detection active';
+                        webcamStatus.className = 'mask-status';
+                    }
+                })
+                .catch(error => {
+                    showModal('Camera Error', `Failed to start detection: ${error.message}`);
+                });
+        });
+
+        stopWebcamBtn.addEventListener('click', function() {
+            fetch('/stop_detection')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'stopped') {
+                        webcam.srcObject = null;
+                        webcam.src = '';
+                        webcamContainer.style.display = 'none';
+                        startWebcamBtn.style.display = 'inline-flex';
+                        stopWebcamBtn.style.display = 'none';
+                        webcamStatus.textContent = '';
+                    }
+                });
+        });
+        
+        function startRealTimeDetection() {
+            const ctx = canvas.getContext('2d');
+            canvas.width = webcam.videoWidth;
+            canvas.height = webcam.videoHeight;
+            
+            detectionInterval = setInterval(async () => {
+                if (webcam.readyState === webcam.HAVE_ENOUGH_DATA) {
+                    // Draw webcam frame to canvas
+                    ctx.drawImage(webcam, 0, 0, canvas.width, canvas.height);
+                    
+                    // Convert canvas to blob and send to server
+                    canvas.toBlob(async (blob) => {
+                        const formData = new FormData();
+                        formData.append('file', blob, 'frame.jpg');
+                        
+                        try {
+                            const response = await fetch('/predict', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (data.error) {
+                                console.error(data.error);
+                                return;
+                            }
+                            
+                            if (data.has_mask) {
+                                webcamStatus.textContent = `MASK DETECTED (${data.confidence}%) ✓`;
+                                webcamStatus.className = 'mask-status status-mask';
+                            } else {
+                                webcamStatus.textContent = `NO MASK DETECTED (${data.confidence}%) ✗`;
+                                webcamStatus.className = 'mask-status status-no-mask';
+                            }
+                        } catch (error) {
+                            console.error('Detection error:', error);
+                        }
+                    }, 'image/jpeg', 0.8);
+                }
+            }, 1000); // Process every second
+        }
+        
+        function stopRealTimeDetection() {
+            if (detectionInterval) {
+                clearInterval(detectionInterval);
+                detectionInterval = null;
+            }
+        }
+        
+        // Image upload handling
+        imageUpload.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    previewImage.src = event.target.result;
+                    previewContainer.style.display = 'block';
+                    processImageBtn.style.display = 'inline-flex';
+                    imageResults.style.display = 'none';
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        processImageBtn.addEventListener('click', function() {
+            if (!isModelTrained) {
+                showModal('Model Not Trained', 'Please train the model first before analyzing images.');
+                return;
+            }
+            
+            if (!imageUpload.files.length) {
+                showModal('No Image', 'Please select an image first.');
+                return;
+            }
+            
+            imageLoading.style.display = 'block';
+            processImageBtn.style.display = 'none';
+            imageResults.style.display = 'none';
+            
+            const formData = new FormData();
+            formData.append('file', imageUpload.files[0]);
+            
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                imageLoading.style.display = 'none';
+                imageResults.style.display = 'block';
+                
+                if (data.error) {
+                    imageStatus.textContent = `Error: ${data.error}`;
+                    imageStatus.className = 'mask-status';
+                    return;
+                }
+                
+                if (data.has_mask) {
+                    imageStatus.textContent = `MASK DETECTED (${data.confidence}%) ✓`;
+                    imageStatus.className = 'mask-status status-mask';
+                } else {
+                    imageStatus.textContent = `NO MASK DETECTED (${data.confidence}%) ✗`;
+                    imageStatus.className = 'mask-status status-no-mask';
+                }
+                
+                // Show the uploaded image in results
+                previewImage.src = data.image_url;
+            })
+            .catch(error => {
+                imageLoading.style.display = 'none';
+                imageStatus.textContent = `Error: ${error.message}`;
+                imageStatus.className = 'mask-status';
+                imageResults.style.display = 'block';
+            });
+        });
+        
+        // File drop area enhancements
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileDropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileDropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileDropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            fileDropArea.classList.add('is-active');
+        }
+        
+        function unhighlight() {
+            fileDropArea.classList.remove('is-active');
+        }
+        
+        fileDropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                imageUpload.files = files;
+                const event = new Event('change', { bubbles: true });
+                imageUpload.dispatchEvent(event);
+            }
+        }
+        
+        // Modal handling
+        function showModal(title, message) {
+            modalTitle.textContent = title;
+            modalBody.textContent = message;
+            modal.style.display = 'flex';
+        }
+        
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+    </script>
+</body>
+</html>
