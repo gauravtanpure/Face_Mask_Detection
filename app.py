@@ -1,5 +1,5 @@
 # app.py (updated)
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 import numpy as np
 import cv2
 import os
@@ -14,6 +14,10 @@ app = Flask(__name__)
 # Load the model and face detector
 model = None
 face_cascade = None
+
+@app.route('/static/sounds/<path:filename>')
+def serve_sounds(filename):
+    return send_from_directory('static/sounds', filename)
 
 try:
     model = load_model('mymodel.keras')
