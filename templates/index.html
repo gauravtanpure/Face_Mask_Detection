@@ -1,137 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Mask Detection</title>
-    <link rel="stylesheet" href="static/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <header>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MaskAware Face Detection System</title>
+        <link rel="stylesheet" href="static/styles.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-head-side-mask"></i>
+                        <div>
+                            <h1>MaskAware</h1>
+                            <p class="tagline">Intelligent Face Mask Detection System</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-wave">
+                    <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                        <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="#fff"></path>
+                        <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="#fff"></path>
+                        <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="#fff"></path>
+                    </svg>
+                </div>
+            </div>
+        </header>
+        
         <div class="container">
-            <h1><i class="fas fa-head-side-mask"></i> Face Mask Detection</h1>
-            <p>Detect if people are wearing face masks in real-time or from images</p>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="main-content">
-            <div class="features">
-                <div class="card">
-                    <h2><i class="fas fa-brain"></i> Train Model</h2>
-                    <div class="card-content">
-                        <p>Train the face mask detection model with your own dataset. Make sure you have the proper directory structure with mask/no mask images.</p>
-                    </div>
-                    <div class="btn-group">
-                        <button id="train-model-btn" class="btn btn-primary">
-                            <i class="fas fa-cogs"></i> Train Model
-                        </button>
-                    </div>
-                    <div id="train-status" class="status-area">
-                        <div class="progress-bar">
-                            <div class="progress-bar-fill"></div>
+            <div class="main-content">
+                <div class="features">
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-brain"></i>
                         </div>
-                        <p id="train-status-text">Training model...</p>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h2><i class="fas fa-camera"></i> Webcam Detection</h2>
-                    <div class="card-content">
-                        <p>Use your webcam for real-time face mask detection. Make sure your camera is connected and accessible.</p>
-                    </div>
-                    <div class="btn-group">
-                        <button id="start-webcam-btn" class="btn btn-success">
-                            <i class="fas fa-video"></i> Start Detection
-                        </button>
-                        <button id="stop-webcam-btn" class="btn btn-danger" style="display: none;">
-                            <i class="fas fa-video-slash"></i> Stop Detection
-                        </button>
-                    </div>
-                    <div class="webcam-container" id="webcam-container">
-                        <img id="webcam" src="">
-                        <canvas id="canvas" style="display: none;"></canvas>
-                        <div class="mask-status" id="webcam-status"></div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h2><i class="fas fa-image"></i> Image Detection</h2>
-                    <div class="card-content">
-                        <p>Upload an image to check if the person in the image is wearing a face mask.</p>
-                    </div>
-                    <div class="upload-container">
-                        <div class="file-drop-area">
-                            <div class="file-message">
-                                <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                <p>Drag & drop an image or click to browse</p>
+                        <h2>Train Model</h2>
+                        <div class="card-content">
+                            <p>Train the face mask detection model with your own dataset. Make sure you have the proper directory structure with mask/no mask images.</p>
+                        </div>
+                        <div class="btn-group">
+                            <button id="train-model-btn" class="btn btn-primary">
+                                <i class="fas fa-cogs"></i> Train Model
+                            </button>
+                        </div>
+                        <div id="train-status" class="status-area">
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill"></div>
                             </div>
-                            <input class="file-input" type="file" accept="image/*" id="image-upload">
+                            <p id="train-status-text">Training model...</p>
                         </div>
-                        <div class="preview-container" id="preview-container">
-                            <img class="preview-image" id="preview-image">
-                        </div>
-                        <div class="loading-spinner" id="image-loading"></div>
-                        <div class="results-container" id="image-results">
-                            <h3>Detection Result:</h3>
-                            <div class="mask-status" id="image-status"></div>
-                        </div>
-                        <button id="process-image-btn" class="btn btn-primary" style="display: none; margin-top: 20px;">
-                            <i class="fas fa-check-circle"></i> Detect Mask
-                        </button>
                     </div>
-                </div>
-
-                <!-- New Analytics Card -->
-                <div class="card">
-                    <h2><i class="fas fa-chart-pie"></i> Detection Analytics</h2>
-                    <div class="card-content">
-                        <p>View statistics of recent mask detections</p>
-                        <div class="chart-container">
-                            <canvas id="detectionChart"></canvas>
+                    
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-camera"></i>
                         </div>
-                        <div class="stats-summary" id="stats-summary"></div>
-                        <div class="btn-group" style="margin-top: 15px;">
-                            <button id="reset-stats-btn" class="btn btn-warning">
-                                <i class="fas fa-trash-alt"></i> Reset Statistics
+                        <h2>Webcam Detection</h2>
+                        <div class="card-content">
+                            <p>Use your webcam for real-time face mask detection. Make sure your camera is connected and accessible.</p>
+                        </div>
+                        <div class="btn-group">
+                            <button id="start-webcam-btn" class="btn btn-success">
+                                <i class="fas fa-video"></i> Start Detection
+                            </button>
+                            <button id="stop-webcam-btn" class="btn btn-danger" style="display: none;">
+                                <i class="fas fa-video-slash"></i> Stop Detection
+                            </button>
+                        </div>
+                        <div class="webcam-container" id="webcam-container">
+                            <div class="webcam-frame">
+                                <img id="webcam" src="">
+                                <canvas id="canvas" style="display: none;"></canvas>
+                            </div>
+                            <div class="mask-status" id="webcam-status"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <h2>Image Detection</h2>
+                        <div class="card-content">
+                            <p>Upload an image to check if the person in the image is wearing a face mask.</p>
+                        </div>
+                        <div class="upload-container">
+                            <div class="file-drop-area">
+                                <div class="file-message">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Drag & drop an image or click to browse</p>
+                                    <span class="file-types">(JPG, PNG, GIF)</span>
+                                </div>
+                                <input class="file-input" type="file" accept="image/*" id="image-upload">
+                            </div>
+                            <div class="preview-container" id="preview-container">
+                                <div class="preview-frame">
+                                    <img class="preview-image" id="preview-image">
+                                </div>
+                            </div>
+                            <div class="loading-spinner" id="image-loading"></div>
+                            <div class="results-container" id="image-results">
+                                <h3>Detection Result:</h3>
+                                <div class="mask-status" id="image-status"></div>
+                            </div>
+                            <button id="process-image-btn" class="btn btn-primary" style="display: none; margin-top: 20px;">
+                                <i class="fas fa-check-circle"></i> Detect Mask
                             </button>
                         </div>
                     </div>
+    
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h2>Detection Analytics</h2>
+                        <div class="card-content">
+                            <p>View statistics of recent mask detections</p>
+                            <div class="chart-container">
+                                <canvas id="detectionChart"></canvas>
+                            </div>
+                            <div class="stats-summary" id="stats-summary"></div>
+                            <div class="btn-group" style="margin-top: 15px;">
+                                <button id="reset-stats-btn" class="btn btn-warning">
+                                    <i class="fas fa-trash-alt"></i> Reset Statistics
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        
+        <div class="sound-alert" id="sound-alert">
+            <i id="sound-alert-icon"></i>
+            <span id="sound-alert-text"></span>
+        </div>
     
-    <!-- Sound Alert Notification -->
-    <div class="sound-alert" id="sound-alert">
-        <i id="sound-alert-icon"></i>
-        <span id="sound-alert-text"></span>
-    </div>
-
-    <!-- Audio Elements for Sound Alerts -->
-    <audio id="mask-sound" src="/static/sounds/mask-detected.mp3" preload="auto"></audio>
-    <audio id="no-mask-sound" src="/static/sounds/no-mask-detected.mp3" preload="auto"></audio>
-
-    <!-- Modal -->
-    <div class="modal" id="status-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modal-title">Status</h3>
-                <button class="close-btn" id="close-modal">&times;</button>
-            </div>
-            <div class="modal-body" id="modal-body">
-                <!-- Content will be dynamically added -->
+        <audio id="mask-sound" src="/static/sounds/mask-detected.mp3" preload="auto"></audio>
+        <audio id="no-mask-sound" src="/static/sounds/no-mask-detected.mp3" preload="auto"></audio>
+    
+        <div class="modal" id="status-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal-title">Status</h3>
+                    <button class="close-btn" id="close-modal">&times;</button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- Content will be dynamically added -->
+                </div>
             </div>
         </div>
-    </div>
-    
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Face Mask Detection App</p>
-        </div>
-    </footer>
+        
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2025 MaskAware Face Detection System</p>
+                <div class="footer-links">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fas fa-question-circle"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
