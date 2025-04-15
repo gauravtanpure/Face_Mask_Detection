@@ -409,7 +409,7 @@
                         </button>
                     </div>
                     <div class="webcam-container" id="webcam-container">
-                        <video id="webcam"></video>
+                        <img id="webcam" src="">
                         <canvas id="canvas" style="display: none;"></canvas>
                         <div class="mask-status" id="webcam-status"></div>
                     </div>
@@ -526,6 +526,7 @@
         });
         
         // Webcam handling
+        // Find this code block (around line 467-483 in the startWebcamBtn event listener):
         startWebcamBtn.addEventListener('click', function() {
             if (!isModelTrained) {
                 showModal('Model Not Trained', 'Please train the model first before using the webcam detection.');
@@ -567,55 +568,55 @@
                 });
         });
         
-        function startRealTimeDetection() {
-            const ctx = canvas.getContext('2d');
-            canvas.width = webcam.videoWidth;
-            canvas.height = webcam.videoHeight;
+        // function startRealTimeDetection() {
+        //     const ctx = canvas.getContext('2d');
+        //     canvas.width = webcam.videoWidth;
+        //     canvas.height = webcam.videoHeight;
             
-            detectionInterval = setInterval(async () => {
-                if (webcam.readyState === webcam.HAVE_ENOUGH_DATA) {
-                    // Draw webcam frame to canvas
-                    ctx.drawImage(webcam, 0, 0, canvas.width, canvas.height);
+        //     detectionInterval = setInterval(async () => {
+        //         if (webcam.readyState === webcam.HAVE_ENOUGH_DATA) {
+        //             // Draw webcam frame to canvas
+        //             ctx.drawImage(webcam, 0, 0, canvas.width, canvas.height);
                     
-                    // Convert canvas to blob and send to server
-                    canvas.toBlob(async (blob) => {
-                        const formData = new FormData();
-                        formData.append('file', blob, 'frame.jpg');
+        //             // Convert canvas to blob and send to server
+        //             canvas.toBlob(async (blob) => {
+        //                 const formData = new FormData();
+        //                 formData.append('file', blob, 'frame.jpg');
                         
-                        try {
-                            const response = await fetch('/predict', {
-                                method: 'POST',
-                                body: formData
-                            });
+        //                 try {
+        //                     const response = await fetch('/predict', {
+        //                         method: 'POST',
+        //                         body: formData
+        //                     });
                             
-                            const data = await response.json();
+        //                     const data = await response.json();
                             
-                            if (data.error) {
-                                console.error(data.error);
-                                return;
-                            }
+        //                     if (data.error) {
+        //                         console.error(data.error);
+        //                         return;
+        //                     }
                             
-                            if (data.has_mask) {
-                                webcamStatus.textContent = `MASK DETECTED (${data.confidence}%) ✓`;
-                                webcamStatus.className = 'mask-status status-mask';
-                            } else {
-                                webcamStatus.textContent = `NO MASK DETECTED (${data.confidence}%) ✗`;
-                                webcamStatus.className = 'mask-status status-no-mask';
-                            }
-                        } catch (error) {
-                            console.error('Detection error:', error);
-                        }
-                    }, 'image/jpeg', 0.8);
-                }
-            }, 1000); // Process every second
-        }
+        //                     if (data.has_mask) {
+        //                         webcamStatus.textContent = `MASK DETECTED (${data.confidence}%) ✓`;
+        //                         webcamStatus.className = 'mask-status status-mask';
+        //                     } else {
+        //                         webcamStatus.textContent = `NO MASK DETECTED (${data.confidence}%) ✗`;
+        //                         webcamStatus.className = 'mask-status status-no-mask';
+        //                     }
+        //                 } catch (error) {
+        //                     console.error('Detection error:', error);
+        //                 }
+        //             }, 'image/jpeg', 0.8);
+        //         }
+        //     }, 1000); // Process every second
+        // }
         
-        function stopRealTimeDetection() {
-            if (detectionInterval) {
-                clearInterval(detectionInterval);
-                detectionInterval = null;
-            }
-        }
+        // function stopRealTimeDetection() {
+        //     if (detectionInterval) {
+        //         clearInterval(detectionInterval);
+        //         detectionInterval = null;
+        //     }
+        // }
         
         // Image upload handling
         imageUpload.addEventListener('change', function(e) {
